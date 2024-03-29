@@ -1,6 +1,5 @@
 from app.parse import get_all_courses, CourseType
 
-
 FOR_SURE_THIS_COURSES = [
     "QA",
     "Java",
