@@ -21,6 +21,7 @@ class Course:
 NAME = "a[class*=ProfessionCard_title]"
 SHORT_DESCRIPTION = "p[class*='typography_landingTextMain__Rc8BD mb-32']"
 PART_FULL_LINKS = ".ProfessionCard_buttons__a0o60 > a"
+COURSE_TYPE = "head > meta[property='og:url']"
 NUM_MODULES = "div.CourseModulesHeading_modulesNumber__UrnUh > p"
 NUM_TOPICS = "div.CourseModulesHeading_topicsNumber__5IA8Z > p"
 DURATION = "div.CourseModulesHeading_courseDuration__qu2Lx > p"
