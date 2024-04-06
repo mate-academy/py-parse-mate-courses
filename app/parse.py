@@ -35,7 +35,7 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
         course_type = get_course_type(course_soup)
         modules, topics, duration = get_moduls_topics_and_duration(course_soup)
         return Course(
-            name=course_soup.select_one('a').text,
+            name=course_soup.select_one("a").text,
             short_description=course_soup.select_one(".mb-32").text,
             course_type=course_type,
             modules=modules,
@@ -52,15 +52,23 @@ def get_course_type(course_soup: BeautifulSoup) -> CourseType:
         return CourseType.PART_TIME
 
 
-def get_moduls_topics_and_duration(course_soup: BeautifulSoup):
-    course_detail_link = course_soup.select(".ProfessionCard_buttons__a0o60 > a")[0]['href']
+def get_moduls_topics_and_duration(course_soup: BeautifulSoup) -> tuple:
+    course_detail_link = course_soup.select(
+        ".ProfessionCard_buttons__a0o60 > a"
+    )[0]["href"]
     page = requests.get(urljoin(MATE_URL, course_detail_link)).content
     soup = BeautifulSoup(page, "html.parser")
-    modules = ''.join(filter(str.isdigit, soup.select_one(".CourseModulesHeading_text__bBEaP").text))
-    topics = ''.join(filter(str.isdigit, soup.select_one(".CourseModulesHeading_topicsNumber__5IA8Z").text))
-    duration = ''.join(filter(str.isdigit, soup.select_one(".CourseModulesHeading_courseDuration__qu2Lx").text))
+    modules = "".join(filter(str.isdigit, soup.select_one(
+        ".CourseModulesHeading_text__bBEaP"
+    ).text))
+    topics = "".join(filter(str.isdigit, soup.select_one(
+        ".CourseModulesHeading_topicsNumber__5IA8Z"
+    ).text))
+    duration = "".join(filter(str.isdigit, soup.select_one(
+        ".CourseModulesHeading_courseDuration__qu2Lx"
+    ).text))
     return int(modules), int(topics), int(duration)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(get_all_courses())
