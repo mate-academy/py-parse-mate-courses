@@ -25,8 +25,7 @@ class Course:
 def get_all_courses() -> list[Course]:
     page = requests.get(MATE_URL).content
     soup = BeautifulSoup(page, "html.parser")
-    courses = soup.select(".ProfessionsListSection_cardsWrapper___Zpyd")[0]
-
+    courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     return [parse_single_course(course) for course in courses]
 
 
@@ -42,6 +41,8 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
             topics=topics,
             duration=duration
         )
+    else:
+        pass
 
 
 def get_course_type(course_soup: BeautifulSoup) -> CourseType:
