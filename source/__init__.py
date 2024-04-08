@@ -1,0 +1,7 @@
+COURSE_TYPES_PATH = ".ProfessionCard_buttons__a0o60 > a"
+COURSE_DETAIL_LINK_PATH = ".ProfessionCard_buttons__a0o60 > a"
+MODULES_PATH = ".CourseModulesHeading_text__bBEaP"
+TOPICS_PATH = ".CourseModulesHeading_topicsNumber__5IA8Z"
+DURATION_PATH = ".CourseModulesHeading_courseDuration__qu2Lx"
+MATE_URL = "https://mate.academy/"
+COURSES_PATH = ".ProfessionCard_cardWrapper__JQBNJ"
