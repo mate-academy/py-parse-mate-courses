@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
 
