@@ -6,6 +6,7 @@ from enum import Enum
 
 BASE_URL = "https://mate.academy/"
 
+
 class CourseType(Enum):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"
