@@ -31,8 +31,12 @@ def get_single_course(course_soup: BeautifulSoup) -> [Course]:
     courses = []
 
     name = course_soup.select_one("a[class*=ProfessionCard_title__Zq5ZY]").text
-    short_description = course_soup.select_one("p.typography_landingTextMain__Rc8BD.mb-32").text
-    duration = int(course_soup.select_one("p[class*=ProfessionCard_subtitle__K1Yp6]").text[0])
+    short_description = course_soup.select_one(
+        "p.typography_landingTextMain__Rc8BD.mb-32"
+    ).text
+    duration = int(
+        course_soup.select_one("p[class*=ProfessionCard_subtitle__K1Yp6]").text[0]
+    )
 
     part_time = course_soup.select_one("a[class*=Button_secondary__DNIuD]")
     full_time = course_soup.select_one("a[class*=Button_primary__7fH0C]")
