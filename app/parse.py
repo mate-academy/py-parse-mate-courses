@@ -25,7 +25,8 @@ def get_all_courses() -> list[Course]:
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     for course in courses:
         name = course.select_one(
-            ".typography_landingH3__vTjok.ProfessionCard_title__Zq5ZY.mb-12 > h3"
+            ".typography_landingH3__vTjok."
+            "ProfessionCard_title__Zq5ZY.mb-12 > h3"
         ).text
         short_description = course.select_one(
             ".typography_landingTextMain__Rc8BD.mb-32"
