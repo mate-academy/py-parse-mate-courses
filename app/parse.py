@@ -24,17 +24,26 @@ def get_all_courses() -> list[Course]:
     soup = BeautifulSoup(page, "html.parser")
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     for course in courses:
-        name = (course.
-                select_one(".typography_landingH3__vTjok.ProfessionCard_title__Zq5ZY.mb-12 > h3").text)
-        short_description = (course.
-                             select_one(".typography_landingTextMain__Rc8BD.mb-32").text)
-        course_types = (course.
-                        select(".ProfessionCard_buttons__a0o60 > a > span"))
+        name = course.select_one(
+            ".typography_landingH3__vTjok.ProfessionCard_title__Zq5ZY.mb-12 > h3"
+        ).text
+        short_description = course.select_one(
+            ".typography_landingTextMain__Rc8BD.mb-32"
+        ).text
+        course_types = course.select(
+            ".ProfessionCard_buttons__a0o60 > a > span"
+        )
         if len(course_types) == 2:
             course_type = f"{CourseType.FULL_TIME}/{CourseType.PART_TIME}"
         else:
             course_type = CourseType.FULL_TIME
-        print(Course(name=name, short_description=short_description, course_type=course_type))
+        print(
+            Course(
+                name=name,
+                short_description=short_description,
+                course_type=course_type
+            )
+        )
 
 
 get_all_courses()
