@@ -55,7 +55,6 @@ def get_all_courses() -> list[Course]:
                 )
             )
         else:
-            course_type = CourseType.PART_TIME
 
             all_courses.append(
                 Course(
@@ -65,7 +64,6 @@ def get_all_courses() -> list[Course]:
                 )
             )
     return all_courses
-
 
 
 get_all_courses()
