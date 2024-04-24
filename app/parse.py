@@ -39,7 +39,6 @@ def get_all_courses() -> list[Course]:
             ".ProfessionCard_buttons__a0o60 > a > span"
         )
         if len(course_types) == 2:
-            # course_type = CourseType.FULL_TIME
             all_courses.append(
                 Course(
                     name=name,
