@@ -12,6 +12,9 @@ class CourseType(Enum):
     PART_TIME = "part-time"
 
 
+all_courses = []
+
+
 @dataclass
 class Course:
     name: str
@@ -20,6 +23,7 @@ class Course:
 
 
 def get_all_courses() -> list[Course]:
+    global all_courses
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
@@ -35,16 +39,33 @@ def get_all_courses() -> list[Course]:
             ".ProfessionCard_buttons__a0o60 > a > span"
         )
         if len(course_types) == 2:
-            course_type = f"{CourseType.FULL_TIME}/{CourseType.PART_TIME}"
-        else:
-            course_type = CourseType.FULL_TIME
-        print(
-            Course(
-                name=name,
-                short_description=short_description,
-                course_type=course_type
+            # course_type = CourseType.FULL_TIME
+            all_courses.append(
+                Course(
+                    name=name,
+                    short_description=short_description,
+                    course_type=CourseType.FULL_TIME
+                )
             )
-        )
+            all_courses.append(
+                Course(
+                    name=name,
+                    short_description=short_description,
+                    course_type=CourseType.PART_TIME
+                )
+            )
+        else:
+            course_type = CourseType.PART_TIME
+
+            all_courses.append(
+                Course(
+                    name=name,
+                    short_description=short_description,
+                    course_type=CourseType.PART_TIME
+                )
+            )
+    return all_courses
+
 
 
 get_all_courses()
