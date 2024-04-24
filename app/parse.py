@@ -38,11 +38,11 @@ def parse_singe_course(course: BeautifulSoup) -> Course:
     return Course(
         name=name,
         short_description=description.text,
-        course_type=course_type.value,
+        course_type=course_type,
     )
 
 
-def get_courses() -> [Course]:
+def get_all_courses() -> [Course]:
     page = requests.get(URL).content
     soup = BeautifulSoup(page, "html.parser")
     all_courses = []
@@ -59,7 +59,7 @@ def write_courses_to_csv(courses: [Course]) -> None:
 
 
 def main() -> None:
-    courses = get_courses()
+    courses = get_all_courses()
     write_courses_to_csv(courses)
 
 
