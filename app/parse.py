@@ -94,7 +94,7 @@ def parse_home_page_courses(
         parse_single_course(course_block, client)
 
 
-def get_all_courses() -> list:
+def get_all_courses() -> list[Course]:
     with httpx.Client() as client:
         page = client.get(URL).content
         soup = BeautifulSoup(page, "html.parser")
