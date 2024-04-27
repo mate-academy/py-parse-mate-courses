@@ -2,9 +2,9 @@ from app.parse import get_all_courses, CourseType
 
 
 FOR_SURE_THIS_COURSES = [
-    "QA",
-    "Java",
-    "Python",
+    "QA engineer",
+    "Java developer",
+    "Python developer",
 ]  # frontend is web development sometimes
 
 
