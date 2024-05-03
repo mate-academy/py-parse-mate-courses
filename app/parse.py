@@ -27,7 +27,7 @@ def get_single_page() -> BeautifulSoup:
     return course_soup
 
 
-def get_single_course(course_soup: BeautifulSoup) -> [Course]:
+def get_single_course(course_soup: BeautifulSoup) -> list[Course]:
     courses = []
 
     name = course_soup.select_one("a[class*=ProfessionCard_title__Zq5ZY]").text
