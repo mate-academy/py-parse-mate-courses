@@ -1,4 +1,4 @@
-from app.parse import get_all_courses, CourseType
+from app.parse import ScrapeMateCourses, CourseType
 
 
 FOR_SURE_THIS_COURSES = [
@@ -9,7 +9,8 @@ FOR_SURE_THIS_COURSES = [
 
 
 def test_get_all_courses():
-    all_courses = get_all_courses()
+    scraper = ScrapeMateCourses()
+    all_courses = scraper.get_all_courses()
 
     for course_type in CourseType:
         course_names = [
