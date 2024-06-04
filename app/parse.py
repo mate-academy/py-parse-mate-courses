@@ -52,18 +52,11 @@ def parse_single_types_course(soup_course: Tag) -> tuple[Course, Course]:
     )
 
     logging.info("Parsing part-time details")
-    part_time_url = soup_course.select_one(
-        "[data-qa='parttime-course-more-details-button']"
-    )["href"]
 
     if soup_course.select_one(
             "[data-qa='fulltime-course-more-details-button']"
     ):
         logging.info("Parsing full-time details")
-
-        full_time_url = soup_course.select_one(
-            "[data-qa='fulltime-course-more-details-button']"
-        )["href"]
 
     return full_time, part_time
 
