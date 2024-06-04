@@ -27,29 +27,6 @@ class Course:
     name: str
     short_description: str
     course_type: CourseType
-    modules: int = None
-    topics: int = None
-    duration: int = None
-
-
-def parse_course_details(url: str) -> tuple[int, int, str]:
-    page = requests.get(urljoin(BASE_URL, url)).content
-    soup = BeautifulSoup(page, "html.parser")
-    modules = int(
-        soup.select_one(
-            ".CourseModulesHeading_modulesNumber__UrnUh"
-        ).text.split()[0]
-    )
-    topics = int(
-        soup.select_one(
-            ".CourseModulesHeading_topicsNumber__5IA8Z"
-        ).text.split()[0]
-    )
-    duration = soup.select_one(
-        ".CourseModulesHeading_courseDuration__qu2Lx"
-    ).text
-
-    return modules, topics, duration
 
 
 def parse_single_types_course(soup_course: Tag) -> tuple[Course, Course]:
@@ -79,10 +56,6 @@ def parse_single_types_course(soup_course: Tag) -> tuple[Course, Course]:
         "[data-qa='parttime-course-more-details-button']"
     )["href"]
 
-    (
-        part_time.modules, part_time.topics, part_time.duration
-    ) = parse_course_details(part_time_url)
-
     if soup_course.select_one(
             "[data-qa='fulltime-course-more-details-button']"
     ):
@@ -91,10 +64,6 @@ def parse_single_types_course(soup_course: Tag) -> tuple[Course, Course]:
         full_time_url = soup_course.select_one(
             "[data-qa='fulltime-course-more-details-button']"
         )["href"]
-
-        (
-            full_time.modules, full_time.topics, full_time.duration
-        ) = parse_course_details(full_time_url)
 
     return full_time, part_time
 
