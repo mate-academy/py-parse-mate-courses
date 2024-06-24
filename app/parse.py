@@ -20,10 +20,18 @@ class Course:
 
 
 def parse_course(course_soup: BeautifulSoup) -> list[Course]:
-    name = course_soup.select_one("a[class*='ProfessionCard_title'] > h3").text
-    short_description = course_soup.select_one("p:not([class*='ProfessionCard_subtitle'])").text
-    fulltime = course_soup.select_one("a[data-qa=fulltime-course-more-details-button]")
-    parttime = course_soup.select_one("a[data-qa=parttime-course-more-details-button]")
+    name = course_soup.select_one(
+        "a[class*='ProfessionCard_title'] > h3"
+    ).text
+    short_description = course_soup.select_one(
+        "p:not([class*='ProfessionCard_subtitle'])"
+    ).text
+    fulltime = course_soup.select_one(
+        "a[data-qa=fulltime-course-more-details-button]"
+    )
+    parttime = course_soup.select_one(
+        "a[data-qa=parttime-course-more-details-button]"
+    )
 
     result = []
 
