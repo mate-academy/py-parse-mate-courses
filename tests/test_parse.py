@@ -9,7 +9,8 @@ FOR_SURE_THIS_COURSES = [
 
 
 def test_get_all_courses():
-    all_courses = get_all_courses()
+    url = "https://mate.academy/"
+    all_courses = get_all_courses(url)
 
     for course_type in CourseType:
         course_names = [

@@ -1,0 +1,20 @@
+2024-07-01 15:35:54,003 - INFO - Time taken by get_page_content: 0.56 seconds
+2024-07-01 15:35:54,494 - INFO - Time taken by get_page_content: 0.42 seconds
+2024-07-01 15:35:55,043 - INFO - Time taken by get_page_content: 0.43 seconds
+2024-07-01 15:35:55,603 - INFO - Time taken by get_page_content: 0.43 seconds
+2024-07-01 15:35:56,105 - INFO - Time taken by get_page_content: 0.40 seconds
+2024-07-01 15:35:56,633 - INFO - Time taken by get_page_content: 0.43 seconds
+2024-07-01 15:35:57,163 - INFO - Time taken by get_page_content: 0.42 seconds
+2024-07-01 15:35:57,717 - INFO - Time taken by get_page_content: 0.45 seconds
+2024-07-01 15:35:58,298 - INFO - Time taken by get_page_content: 0.44 seconds
+2024-07-01 15:35:58,819 - INFO - Time taken by get_page_content: 0.42 seconds
+2024-07-01 15:35:59,323 - INFO - Time taken by get_page_content: 0.41 seconds
+2024-07-01 15:35:59,913 - INFO - Time taken by get_page_content: 0.49 seconds
+2024-07-01 15:36:00,411 - INFO - Time taken by get_page_content: 0.40 seconds
+2024-07-01 15:36:00,941 - INFO - Time taken by get_page_content: 0.44 seconds
+2024-07-01 15:36:01,552 - INFO - Time taken by get_page_content: 0.46 seconds
+2024-07-01 15:36:02,051 - INFO - Time taken by get_page_content: 0.40 seconds
+2024-07-01 15:36:02,144 - INFO - Write to file: courses_data.json
+2024-07-01 15:36:02,288 - INFO - Write to Excel file: courses_data.xlsx
+2024-07-01 15:36:02,288 - INFO - Courses data saved to courses_data.json and courses_data.xlsx
+2024-07-01 15:36:02,288 - INFO - Time taken by main: 8.84 seconds
