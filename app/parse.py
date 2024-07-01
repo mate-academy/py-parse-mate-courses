@@ -5,6 +5,7 @@ import time
 from dataclasses import dataclass, asdict
 from enum import Enum
 from functools import wraps
+from typing import Callable, Any
 
 import pandas as pd
 import requests
@@ -53,7 +54,7 @@ class CourseDetailDTO:
     modules: list[CourseModuleDTO]
 
 
-def configure_logging():
+def configure_logging() -> None:
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
@@ -72,9 +73,9 @@ def configure_logging():
     logger.addHandler(console_handler)
 
 
-def log_time(func):
+def log_time(func: Callable) -> Callable:
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         start_time = time.time()
         result = func(*args, **kwargs)
         elapsed_time = time.time() - start_time
@@ -192,7 +193,7 @@ def get_all_courses(url: str) -> list[CourseLinkDTO]:
     return courses
 
 
-def write_to_json(courses_details: list[dict], file_name: str):
+def write_to_json(courses_details: list[dict], file_name: str) -> None:
     with open(file_name, "w", encoding="utf-8") as f:
         json.dump(courses_details, f, ensure_ascii=False, indent=4)
     logging.info(f"Write to file: {file_name}")
@@ -205,12 +206,13 @@ def sanitize_sheet_name(sheet_name: str) -> str:
 def add_line_breaks(text: str, max_words: int) -> str:
     words = text.split()
     lines = [
-        " ".join(words[i : i + max_words]) for i in range(0, len(words), max_words)
+        " ".join(words[i: i + max_words])
+        for i in range(0, len(words), max_words)
     ]
     return "\n".join(lines)
 
 
-def write_to_excel(courses_data: list[dict], file_name: str):
+def write_to_excel(courses_data: list[dict], file_name: str) -> None:
     summary_data = [
         {
             "Name": course["name"],
@@ -231,7 +233,8 @@ def write_to_excel(courses_data: list[dict], file_name: str):
 
             for col in df_modules.columns:
                 df_modules[col] = df_modules[col].apply(
-                    lambda x: add_line_breaks(x, 10) if isinstance(x, str) else x
+                    lambda x: add_line_breaks(x, 10)
+                    if isinstance(x, str) else x
                 )
 
             df_modules.to_excel(writer, sheet_name=course_name, index=False)
@@ -240,7 +243,7 @@ def write_to_excel(courses_data: list[dict], file_name: str):
 
     summary_sheet = workbook["Summary"]
     for row in summary_sheet.iter_rows(
-        min_row=2, max_row=len(courses_data) + 1, min_col=1, max_col=1
+            min_row=2, max_row=len(courses_data) + 1, min_col=1, max_col=1
     ):
         for cell in row:
             course_name = cell.value
@@ -267,7 +270,7 @@ def write_to_excel(courses_data: list[dict], file_name: str):
                 try:
                     if len(str(cell.value)) > max_length:
                         max_length = len(str(cell.value))
-                except:
+                except Exception:
                     pass
             adjusted_width = min((max_length + 2), 50)
             worksheet.column_dimensions[column].width = adjusted_width
