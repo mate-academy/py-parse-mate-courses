@@ -13,7 +13,7 @@ class CourseType(Enum):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -29,12 +29,19 @@ def fetch_html(url: str) -> BeautifulSoup:
     return BeautifulSoup(response.content, "html.parser")
 
 
-def parse_single_course(course_card: BeautifulSoup, course_type: CourseType) -> Course:
-    title_pattern = re.compile(r'ProfessionCard_title__[a-zA-Z0-9]{5}')
-    description_pattern = re.compile(r'typography_landingTextMain__[a-zA-Z0-9]{5}')
+def parse_single_course(
+        course_card: BeautifulSoup,
+        course_type: CourseType
+) -> Course:
+    title_pattern = re.compile(r"ProfessionCard_title__[a-zA-Z0-9]{5}")
+    description_pattern = re.compile(
+        r"typography_landingTextMain__[a-zA-Z0-9]{5}"
+    )
 
     name = course_card.find(class_=title_pattern).get_text(strip=True)
-    short_description = course_card.find(class_=description_pattern).find_next('p').get_text(strip=True)
+    short_description = course_card.find(
+        class_=description_pattern
+    ).find_next("p").get_text(strip=True)
 
     return Course(
         name=name,
@@ -49,13 +56,23 @@ def get_all_courses() -> list[Course]:
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
 
     for course in courses:
-        full_time_link = course.find("a", {"data-qa": "fulltime-course-more-details-button"})
-        part_time_link = course.find("a", {"data-qa": "fx-course-details-button"})
+        full_time_link = course.find(
+            "a",
+            {"data-qa": "fulltime-course-more-details-button"}
+        )
+        part_time_link = course.find(
+            "a",
+            {"data-qa": "fx-course-details-button"}
+        )
 
         if full_time_link:
-            all_courses.append(parse_single_course(course, CourseType.FULL_TIME))
+            all_courses.append(parse_single_course(
+                course, CourseType.FULL_TIME
+            ))
         if part_time_link:
-            all_courses.append(parse_single_course(course, CourseType.PART_TIME))
+            all_courses.append(parse_single_course(
+                course, CourseType.PART_TIME
+            ))
 
     return all_courses
 
@@ -69,12 +86,13 @@ def save_courses_to_csv(courses: list[Course], filename: str) -> None:
         writer.writerow(fieldnames)
         for course in courses:
             row = astuple(course)
-            row = [str(value) if isinstance(value, Enum) else value for value in row]
+            row = [str(value) if isinstance(value, Enum)
+                   else value for value in row]
             writer.writerow(row)
     print(f"Courses saved to {filename}.")
 
 
-def main():
+def main() -> None:
     courses = get_all_courses()
     if courses:
         save_courses_to_csv(courses, COURSES_OUTPUT_CSV_PATH)
