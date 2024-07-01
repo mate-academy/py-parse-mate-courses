@@ -1,17 +1,27 @@
-from dataclasses import dataclass
+import csv
+from dataclasses import dataclass, astuple
+from enum import Enum
 import requests
 from bs4 import BeautifulSoup
 import re
-import csv
 
 BASE_URL = "https://mate.academy"
+COURSES_OUTPUT_CSV_PATH = "courses.csv"
+
+
+class CourseType(Enum):
+    FULL_TIME = "full-time"
+    PART_TIME = "part-time"
+
+    def __str__(self):
+        return self.value
 
 
 @dataclass
 class Course:
-    title: str
-    description: str
-    duration: int
+    name: str
+    short_description: str
+    course_type: CourseType
 
 
 def fetch_html(url: str) -> BeautifulSoup:
@@ -19,57 +29,55 @@ def fetch_html(url: str) -> BeautifulSoup:
     return BeautifulSoup(response.content, "html.parser")
 
 
-def parse_single_course(course_soup: BeautifulSoup) -> Course:
+def parse_single_course(course_card: BeautifulSoup, course_type: CourseType) -> Course:
     title_pattern = re.compile(r'ProfessionCard_title__[a-zA-Z0-9]{5}')
-    subtitle_pattern = re.compile(r'ProfessionCard_subtitle__[a-zA-Z0-9]{5}')
     description_pattern = re.compile(r'typography_landingTextMain__[a-zA-Z0-9]{5}')
 
-    title = course_soup.find(class_=title_pattern).get_text(strip=True)
-    description = course_soup.find(class_=description_pattern).find_next('p').get_text(strip=True)
-
-    subtitle = course_soup.find(class_=subtitle_pattern).get_text(strip=True)
-    duration_match = re.search(r'\d+', subtitle)
-    duration = int(duration_match.group()) if duration_match else 0
+    name = course_card.find(class_=title_pattern).get_text(strip=True)
+    short_description = course_card.find(class_=description_pattern).find_next('p').get_text(strip=True)
 
     return Course(
-        title=title,
-        description=description,
-        duration=duration
+        name=name,
+        short_description=short_description,
+        course_type=course_type
     )
 
 
-def get_all_courses(page_url: str) -> list[Course]:
-    soup = fetch_html(page_url)
-    card_wrappers = soup.find_all(class_=re.compile(r'ProfessionCard_cardWrapper__[a-zA-Z0-9]{5}'))
+def get_all_courses() -> list[Course]:
+    all_courses = []
+    soup = fetch_html(BASE_URL)
+    courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
 
-    courses = []
-    for card_wrapper in card_wrappers:
-        course = parse_single_course(card_wrapper)
-        courses.append(course)
+    for course in courses:
+        full_time_link = course.find("a", {"data-qa": "fulltime-course-more-details-button"})
+        part_time_link = course.find("a", {"data-qa": "fx-course-details-button"})
 
-    return courses
+        if full_time_link:
+            all_courses.append(parse_single_course(course, CourseType.FULL_TIME))
+        if part_time_link:
+            all_courses.append(parse_single_course(course, CourseType.PART_TIME))
+
+    return all_courses
 
 
 def save_courses_to_csv(courses: list[Course], filename: str) -> None:
     print(f"Saving {len(courses)} courses to {filename}...")
-    with open(filename, mode='w', newline='', encoding='utf-8') as file:
-        fieldnames = ["Title", "Descriptions", "Durations"]
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
+    with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+        fieldnames = ["Name", "Short Description", "Course Type"]
+        writer = csv.writer(csvfile)
 
+        writer.writerow(fieldnames)
         for course in courses:
-            writer.writerow({
-                "Title": course.title,
-                "Descriptions": course.description,
-                "Durations": course.duration
-            })
+            row = astuple(course)
+            row = [str(value) if isinstance(value, Enum) else value for value in row]
+            writer.writerow(row)
     print(f"Courses saved to {filename}.")
 
 
 def main():
-    courses = get_all_courses(BASE_URL)
+    courses = get_all_courses()
     if courses:
-        save_courses_to_csv(courses, "courses.csv")
+        save_courses_to_csv(courses, COURSES_OUTPUT_CSV_PATH)
     else:
         print("No courses found.")
 
