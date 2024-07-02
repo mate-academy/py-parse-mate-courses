@@ -33,7 +33,7 @@ def parse_single_course(course_soup: BeautifulSoup) -> list[Course]:
             name=course_soup.select_one("h3").text.split(" ")[0],
             duration=course_soup.select(
                 ".typography_landingTextMain__Rc8BD"
-            )[0].text,
+            )[0].text.split("•")[0],
             short_description=course_soup.select(
                 ".typography_landingTextMain__Rc8BD"
             )[1].text,
