@@ -5,6 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 
 BASE_URL = "https://mate.academy/"
+FULL_TIME_BUTTON_TEXT = "Повний день"
+PART_TIME_BUTTON_TEXT = "Гнучкий графік"
 
 
 class CourseType(Enum):
@@ -30,14 +32,14 @@ def parse_single_course(course_soup: BeautifulSoup) -> list[Course]:
     courses_list = []
 
     for button in course_type_buttons:
-        if button == "Повний день":
+        if button == FULL_TIME_BUTTON_TEXT:
             single_course = Course(
                 name=name,
                 short_description=short_description,
                 course_type=CourseType.FULL_TIME
             )
             courses_list.append(single_course)
-        elif button == "Гнучкий графік":
+        elif button == PART_TIME_BUTTON_TEXT:
             single_course = Course(
                 name=name,
                 short_description=short_description,
