@@ -14,6 +14,10 @@ class CourseType(Enum):
     PART_TIME = "part-time"
 
 
+PART_TIME = "Гнучкий графік"
+FULL_TIME = "Повний день"
+
+
 @dataclass
 class Course:
     name: str
@@ -24,13 +28,16 @@ class Course:
 COURSE_TYPE_FIELD = [field.name for field in fields(Course)]
 
 
-def _create_course_instance(name: str,
-                            short_description: str,
-                            course_type: str) -> Course:
-    if course_type == "Гнучкий графік":
+def _create_course_instance(
+        name: str,
+        short_description: str,
+        course_type: str
+) -> Course:
+    if course_type == PART_TIME:
         course_type = CourseType.PART_TIME
-    if course_type == "Повний день":
+    if course_type == FULL_TIME:
         course_type = CourseType.FULL_TIME
+
     return Course(
         name=name,
         short_description=short_description,
