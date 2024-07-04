@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -36,23 +35,22 @@ def parse_single_course(course_soup: BeautifulSoup) -> list[Course]:
 
     courses = []
 
-    if full_time_button and part_time_button:
+    if full_time_button:
         full_time_course = Course(
             name=name,
             short_description=short_description,
-            course_type=CourseType.FULL_TIME)
-        part_time_course = Course(
-            name=name,
-            short_description=short_description,
-            course_type=CourseType.PART_TIME)
+            course_type=CourseType.FULL_TIME
+        )
         courses.append(full_time_course)
-        courses.append(part_time_course)
-    elif part_time_button:
+
+    if part_time_button:
         part_time_course = Course(
             name=name,
             short_description=short_description,
-            course_type=CourseType.PART_TIME)
+            course_type=CourseType.PART_TIME
+        )
         courses.append(part_time_course)
+
     return courses
 
 
