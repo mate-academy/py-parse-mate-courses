@@ -13,7 +13,7 @@ class CourseType(Enum):
     PART_TIME = "part-time"
 
 
-@dataclass(frozen=True)
+@dataclass
 class Course:
     name: str
     short_description: str
