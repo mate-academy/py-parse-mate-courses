@@ -33,11 +33,6 @@ class MateCoursesScraper:
         response.raise_for_status()
         return BeautifulSoup(response.content, "html.parser")
 
-    def get_course_details_soup(self, url: str) -> BeautifulSoup:
-        return self.get_page_soup(url).select_one(
-            ".CourseModulesHeading_headingGrid__ynoxV"
-        )
-
     @staticmethod
     def prettify_num_field(field: Tag) -> int:
         return int(field.text.split()[0])
@@ -45,7 +40,9 @@ class MateCoursesScraper:
     def get_single_course(
         self, url: str, course_type: CourseType, course_soup: Tag
     ) -> Course:
-        course_details_soup = self.get_course_details_soup(url)
+        course_details_soup = self.get_page_soup(url).select_one(
+            ".CourseModulesHeading_headingGrid__ynoxV"
+        )
 
         return Course(
             name=course_soup.select_one(".ProfessionCard_title__Zq5ZY").text,
