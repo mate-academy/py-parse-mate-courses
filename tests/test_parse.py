@@ -7,10 +7,10 @@ FOR_SURE_THIS_COURSES = [
     "Python",
 ]  # frontend is web development sometimes
 
-
+ 
 def test_get_all_courses():
     all_courses = get_all_courses()
-
+    print(all_courses)
     for course_type in CourseType:
         course_names = [
             course.name for course in all_courses if course.course_type == course_type
