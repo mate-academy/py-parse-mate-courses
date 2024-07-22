@@ -20,14 +20,18 @@ class Course:
     course_type: CourseType
 
 
-def specify_course_type(course) -> List[Course]:
+def specify_course_type(course: BeautifulSoup) -> List[Course]:
     full_time = course.select_one(
-        ".Button_brandSecondary__DXhVs.Button_large__rIMVg.Button_button__bwept.Button_fullWidth___Ft6W")
+        ".Button_brandSecondary__DXhVs."
+        "Button_large__rIMVg.Button_button__bwept.Button_fullWidth___Ft6W")
     part_time = course.select_one(
-        ".Button_brandPrimary__uJ_Nl.Button_large__rIMVg.Button_button__bwept.Button_fullWidth___Ft6W")
+        ".Button_brandPrimary__uJ_Nl."
+        "Button_large__rIMVg.Button_button__bwept.Button_fullWidth___Ft6W")
 
     if full_time and part_time:
-        return parse_singe_course(course, course1=CourseType.FULL_TIME, course2=CourseType.PART_TIME)
+        return parse_singe_course(course,
+                                  course1=CourseType.FULL_TIME,
+                                  course2=CourseType.PART_TIME)
     elif part_time:
         return parse_singe_course(course, course1=CourseType.PART_TIME)
     elif full_time:
@@ -35,7 +39,9 @@ def specify_course_type(course) -> List[Course]:
     return []
 
 
-def parse_singe_course(soup, course1: CourseType, course2: Optional[CourseType] = None) -> List[Course]:
+def parse_singe_course(soup: BeautifulSoup,
+                       course1: CourseType,
+                       course2: Optional[CourseType] = None) -> List[Course]:
     courses = []
 
     course = Course(
