@@ -33,7 +33,8 @@ def get_all_courses() -> list[Course]:
     for course in courses:
         course_name = course.find(
             "a",
-            class_="typography_landingH3__vTjok ProfessionCard_title__Zq5ZY mb-12"
+            class_="typography_landingH3__vTjok "
+                   "ProfessionCard_title__Zq5ZY mb-12"
         )
         course_description = course.find(
             "p",
@@ -62,7 +63,7 @@ def get_all_courses() -> list[Course]:
             writer.writerow(
                 [
                     course.name, course.short_description,
-                    ', '.join(course.course_types)
+                    ", ".join(course.course_types)
                 ]
             )
 
