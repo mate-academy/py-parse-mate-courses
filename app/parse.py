@@ -9,7 +9,7 @@ BASE_URL = "https://mate.academy/en"
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
-    PART_TIME = "part-time"
+    PART_TIME = "flex"
 
 
 @dataclass
@@ -59,7 +59,12 @@ def get_all_courses() -> list[Course]:
         writer = csv.writer(csvfile)
         writer.writerow(fieldnames)
         for course in all_courses:
-            writer.writerow([course.name, course.short_description, ', '.join(course.course_types)])
+            writer.writerow(
+                [
+                    course.name, course.short_description,
+                    ', '.join(course.course_types)
+                ]
+            )
 
     return all_courses
 
