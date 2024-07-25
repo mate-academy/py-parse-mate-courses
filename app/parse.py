@@ -17,8 +17,6 @@ class Course:
     name: str
     short_description: str
     course_types: list[str]
-    link: str = None
-    updated_at: str = None
 
 
 def get_all_courses() -> list[Course]:
