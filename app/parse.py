@@ -21,7 +21,7 @@ class Course:
 
 
 def parse_course_type(
-        course_soup: BeautifulSoup
+        course_soup: Tag
 ) -> Union[CourseType, List[CourseType], None]:
     full_time = course_soup.select_one(
         ".Button_brandSecondary__DXhVs.Button_large__rIMVg"
@@ -54,8 +54,6 @@ def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
     all_courses = soup.select('a[href*="/courses"]')
-    # all-courses > div > div > div > div:nth-child(1) > a
-    print(all_courses)
     all_cards = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     return [get_single_course(soup_card) for soup_card in all_cards]
 
