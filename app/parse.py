@@ -55,8 +55,17 @@ def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
     all_cards = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
-    all_courses = [get_single_course(soup_card, CourseType.FULL_TIME) for soup_card in all_cards]
-    all_courses.extend([get_single_course(soup_card, CourseType.PART_TIME) for soup_card in all_cards])
+    all_courses = [
+        get_single_course(soup_card, CourseType.FULL_TIME)
+        for soup_card
+        in all_cards
+    ]
+    all_courses.extend(
+        [get_single_course(soup_card, CourseType.PART_TIME)
+         for soup_card
+         in all_cards
+         ]
+    )
     return all_courses
 
 
