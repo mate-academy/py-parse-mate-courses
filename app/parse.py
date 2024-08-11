@@ -41,13 +41,13 @@ def parse_course_type(
         return CourseType.PART_TIME
 
 
-def get_single_course(soup_page: Tag) -> Course:
+def get_single_course(soup_page: Tag, type_course: CourseType) -> Course:
     return Course(
         name=soup_page.select_one("h3").text,
         short_description=soup_page.select_one(
             "p.typography_landingTextMain__Rc8BD.mb-32"
         ).text,
-        course_type=parse_course_type(soup_page)
+        course_type=type_course
     )
 
 
@@ -55,8 +55,12 @@ def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
     all_cards = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
-    return [get_single_course(soup_card) for soup_card in all_cards]
+    all_courses = [get_single_course(soup_card, CourseType.FULL_TIME) for soup_card in all_cards]
+    all_courses.extend([get_single_course(soup_card, CourseType.PART_TIME) for soup_card in all_cards])
+    return all_courses
 
 
 if __name__ == "__main__":
-    print(get_all_courses())
+    courese = get_all_courses()
+    for course in courese:
+        print(course)
