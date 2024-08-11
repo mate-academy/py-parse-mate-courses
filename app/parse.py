@@ -8,6 +8,7 @@ from enum import Enum
 
 BASE_URL = "https://mate.academy/"
 
+
 class CourseType(Enum):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"
@@ -53,7 +54,6 @@ def get_single_course(soup_page: Tag) -> Course:
 def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
-    all_courses = soup.select('a[href*="/courses"]')
     all_cards = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     return [get_single_course(soup_card) for soup_card in all_cards]
 
