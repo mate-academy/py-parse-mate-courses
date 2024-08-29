@@ -17,8 +17,12 @@ class Course:
 
 
 def parse_single_course(product_soup: BeautifulSoup) -> Course:
-    paragraphs_duration_and_description = product_soup.select(PARAGRAPHS_DURATION_DESCRIPTION)
-    name = product_soup.select_one(PARAGRAPH_NAME).text
+    paragraphs_duration_and_description = product_soup.select(
+        PARAGRAPHS_DURATION_DESCRIPTION
+    )
+    name = product_soup.select_one(
+        PARAGRAPH_NAME
+    ).text
     short_description = paragraphs_duration_and_description[1].text
     duration = paragraphs_duration_and_description[0].text.split("•")[0]
 
