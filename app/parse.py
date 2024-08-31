@@ -13,7 +13,7 @@ class Course:
     duration: str
 
 
-def parse_single_course(courses) -> [Course]:
+def parse_single_course(courses: BeautifulSoup) -> [Course]:
     return Course(
         name=courses.select_one("h3").text,
         short_description=courses.select_one(".mb-32").text,
