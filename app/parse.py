@@ -35,9 +35,3 @@ def get_all_courses() -> list[Course]:
 
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     return [parse_single_course(course_soup) for course_soup in courses]
-
-
-if __name__ == "__main__":
-    courses = get_all_courses()
-    for course in courses:
-        print(course)
