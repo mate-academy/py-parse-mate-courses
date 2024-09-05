@@ -32,9 +32,5 @@ def get_all_courses() -> list[Course]:
     ]
 
 
-def main() -> list[Course]:
-    return get_all_courses()
-
-
 if __name__ == "__main__":
-    main()
+    get_all_courses()
