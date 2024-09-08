@@ -32,8 +32,7 @@ async def fetch_page_content(
         async with session.get(url) as response:
             response.raise_for_status()
             return await response.read()
-    except aiohttp.ClientError as error:
-        print("Error fetching page", error)
+    except aiohttp.ClientError:
         return None
 
 
