@@ -18,7 +18,7 @@ def get_single_course(course: BeautifulSoup) -> Course:
     return Course(
         name=course.select_one("h3").text,
         short_description=course.select_one(".mb-32").text,
-        duration=f"{course.select_one('.mb-24').text.split("+")[0]}+ months"
+        duration=f"{course.select_one('.mb-24').text.split('+')[0]}+ months"
     )
 
 
