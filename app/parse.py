@@ -1,9 +1,7 @@
-import csv
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from pprint import pprint
 
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 import requests
 
 BASE_URL = "https://mate.academy/"
@@ -17,7 +15,7 @@ class Course:
 
 
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
-    tags = course_soup.find_all(['span'])
+    tags = course_soup.find_all(["span"])
     duration = None
     for tag in tags:
         if "місяц" in tag.text:
@@ -26,7 +24,9 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
     return Course(
         name=course_soup.select_one(".ProfessionCard_title__Zq5ZY").text,
-        short_description=course_soup.select_one(".typography_landingTextMain__Rc8BD.mb-32").text,
+        short_description=course_soup.select_one(
+            ".typography_landingTextMain__Rc8BD.mb-32"
+        ).text,
         duration=duration
     )
 
