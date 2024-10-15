@@ -3,7 +3,6 @@ import time
 
 import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from dataclasses import dataclass, fields
 from bs4 import BeautifulSoup
@@ -17,9 +16,7 @@ class Driver:
     @staticmethod
     def initialize() -> webdriver.Chrome:
         if Driver.instance is None:
-            options = Options()
-            options.add_argument("--no-sandbox")
-            Driver.instance = webdriver.Chrome(options=options)
+            Driver.instance = webdriver.Chrome()
         return Driver.instance
 
 
@@ -28,8 +25,8 @@ class Course:
     name: str
     short_description: str
     duration: str
-    num_topics: str
-    num_modules: str
+    num_topics: str | None = None
+    num_modules: str | None = None
 
 
 def parse_single_course(soup: BeautifulSoup) -> Course:
@@ -43,19 +40,27 @@ def parse_single_course(soup: BeautifulSoup) -> Course:
         "p.ProfessionCardTags_regularTag__yTc6K"
     )[-1].text
 
+    course = Course(
+        name=name,
+        short_description=short_description,
+        duration=duration
+    )
+    return course
+
+
+def add_num_topics_and_num_modules(
+        soup: BeautifulSoup,
+        course: Course
+) -> Course:
     details = soup.select_one(".typography_landingH3__vTjok")["href"]
     course_details_url = BASE_URL + details
 
     num_topics = parse_num_topics(course_details_url)
     num_modules = parse_num_modules(course_details_url)
 
-    return Course(
-        name=name,
-        short_description=short_description,
-        duration=duration,
-        num_topics=num_topics,
-        num_modules=num_modules
-    )
+    course.num_topics = num_topics
+    course.num_modules = num_modules
+    return course
 
 
 def parse_num_topics(page_url: str) -> str:
@@ -106,8 +111,13 @@ def get_all_courses() -> [Course]:
     page = requests.get(BASE_URL + "/en/").content
     soup = BeautifulSoup(page, "html.parser")
 
-    coursers = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
-    return [parse_single_course(course) for course in coursers]
+    courses_info = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
+    courses = []
+    for course_soup in courses_info:
+        course = parse_single_course(course_soup)
+        add_info = add_num_topics_and_num_modules(course_soup, course)
+        courses.append(add_info)
+    return courses
 
 
 def write_courses(output_csv_path: str, courses: list[Course]) -> None:
