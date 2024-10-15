@@ -111,12 +111,23 @@ def get_all_courses() -> [Course]:
     page = requests.get(BASE_URL + "/en/").content
     soup = BeautifulSoup(page, "html.parser")
 
+    courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
+    return [parse_single_course(course) for course in courses]
+
+
+def get_all_courses_with_extra_info() -> [Course]:
+    """this func was created to avoid github & selenium conflict"""
+
+    page = requests.get(BASE_URL + "/en/").content
+    soup = BeautifulSoup(page, "html.parser")
+
     courses_info = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     courses = []
     for course_soup in courses_info:
         course = parse_single_course(course_soup)
         add_info = add_num_topics_and_num_modules(course_soup, course)
         courses.append(add_info)
+
     return courses
 
 
@@ -137,7 +148,7 @@ def write_courses(output_csv_path: str, courses: list[Course]) -> None:
 
 
 def main(output_csv_path: str) -> None:
-    courses = get_all_courses()
+    courses = get_all_courses_with_extra_info()
     write_courses(output_csv_path, courses)
 
 
