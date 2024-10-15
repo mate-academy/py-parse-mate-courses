@@ -11,13 +11,13 @@ BASE_URL = "https://mate.academy"
 
 
 class Driver:
-    Instance = None
+    instance = None
 
     @staticmethod
     def initialize() -> webdriver.Chrome:
-        if Driver.Instance is None:
-            Driver.Instance = webdriver.Chrome()
-        return Driver.Instance
+        if Driver.instance is None:
+            Driver.instance = webdriver.Chrome()
+        return Driver.instance
 
 
 @dataclass
