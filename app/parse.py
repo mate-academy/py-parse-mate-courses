@@ -3,6 +3,7 @@ import time
 
 import requests
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from dataclasses import dataclass, fields
 from bs4 import BeautifulSoup
@@ -16,7 +17,9 @@ class Driver:
     @staticmethod
     def initialize() -> webdriver.Chrome:
         if Driver.instance is None:
-            Driver.instance = webdriver.Chrome()
+            options = Options()
+            options.add_argument("--no-sandbox")
+            Driver.instance = webdriver.Chrome(options=options)
         return Driver.instance
 
 
