@@ -35,7 +35,9 @@ def get_course(course_tag: Tag) -> Course:
         short_description=course_tag.select_one("div + p").text,
         duration=course_tag.select("p > span")[-1].text,
     )
-    course.modules, course.topics = get_detail_course_info(course_tag.select_one("div > a")["href"])
+    course.modules, course.topics = get_detail_course_info(
+        course_tag.select_one("div > a")["href"]
+    )
 
     return course
 
