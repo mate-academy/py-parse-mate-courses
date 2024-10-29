@@ -43,6 +43,7 @@ def get_all_courses(page_url: str = BASE_URL) -> List[Course]:
     soup = BeautifulSoup(response.text, "html.parser")
 
     course_elements = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
+
     courses = [
         parse_courses(
             course_element
