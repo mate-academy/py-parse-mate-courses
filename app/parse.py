@@ -55,7 +55,3 @@ if __name__ == "__main__":
     courses = get_all_courses(BASE_URL)
     for course in courses:
         print(course)
-
-
-# def get_all_courses() -> list[Course]:
-#     pass
