@@ -14,21 +14,22 @@ class Course:
 
 
 def parse_courses(course_elements: Tag) -> Course:
-    name = course_elements.select_one(".typography_landingH3__vTjok").text
+    name = course_elements.select_one("h3").text
     short_description = course_elements.select_one(
-        ".typography_landingTextMain__Rc8BD.mb-32"
+        "p.mb-32"
     ).text.strip()
     duration_elements = course_elements.select(
-        ".typography_landingTextMain__Rc8BD."
-        "ProfessionCardTags_regularTag__yTc6K"
+        "p[class*=ProfessionCardTags_regularTag]"
     )
 
-    if len(duration_elements) > 1:
-        duration = duration_elements[1].text.strip()
+    # Check if duration_elements is not empty before accessing its elements
+    if duration_elements:
+        if len(duration_elements) > 1:
+            duration = duration_elements[1].text.strip()
+        else:
+            duration = duration_elements[0].text.strip()
     else:
-        duration = (duration_elements[0].
-                    text.strip()) if (
-            duration_elements) else "Duration not found"
+        duration = "Duration not found"
 
     return Course(
         name=name,
