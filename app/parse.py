@@ -20,10 +20,7 @@ def get_course(course: Tag) -> Course:
             course.select_one(".typography_landingTextMain__Rc8BD.mb-32").text
         ),
         duration=(
-            course.select(
-                ".ProfessionCardTags_regularTag__yTc6K"
-                ".ProfessionCardTags_regularTag__yTc6K"
-            )[-1].text
+            course.select(".ProfessionCardTags_regularTag__yTc6K")[-1].text
         )
     )
 
@@ -37,5 +34,8 @@ def get_all_courses() -> list[Course]:
         for course
         in soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     ]
-
+    print(courses)
     return courses
+
+
+get_all_courses()
