@@ -27,6 +27,7 @@ def get_course(course: Tag) -> Course:
         )
     )
 
+
 def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
