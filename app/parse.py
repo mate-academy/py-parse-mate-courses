@@ -34,8 +34,5 @@ def get_all_courses() -> list[Course]:
         for course
         in soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     ]
-    print(courses)
+
     return courses
-
-
-get_all_courses()
