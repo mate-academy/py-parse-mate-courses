@@ -28,13 +28,14 @@ def configure_logging() -> None:
     )
 
 
-def log_time(func) -> Any:
+def log_time(func: callable) -> Any:
     @wraps(func)
     async def wrapper(*args, **kwargs) -> Any:
         start_time = time.time()
         result = await func(*args, **kwargs)
         logging.info(
-            f"Time taken by {func.__name__}: {time.time() - start_time:.2f} seconds"
+            f"Time taken by {func.__name__}: "
+            f"{time.time() - start_time: .2f} seconds"
         )
         return result
 
@@ -43,7 +44,10 @@ def log_time(func) -> Any:
 
 async def get_page_content(session: ClientSession, url: str) -> str:
     try:
-        async with session.get(url, timeout=ClientTimeout(total=5)) as response:
+        async with session.get(
+                url,
+                timeout=ClientTimeout(total=5)
+        ) as response:
             response.raise_for_status()
             return await response.text()
     except Exception as e:
@@ -57,17 +61,23 @@ def parse_single_course(course: BeautifulSoup) -> Course:
         (
             module.select_one("p.CourseModulesList_topicName__ZrDxT").text,
             module.select_one(
-                "p.CourseModulesList_topicsCount__yAPxH.typography_landingTextMain__Rc8BD"
+                "p.CourseModulesList_topicsCount__yAPxH."
+                "typography_landingTextMain__Rc8BD"
             ).text,
         )
         for module in modules
     ]
 
     return Course(
-        name=course.select_one("h1[data-qa='profession-title']").text.split(":")[0],
-        short_description=course.select_one("p.typography_landingTextMain__Rc8BD").text,
+        name=course.select_one(
+            "h1[data-qa='profession-title']"
+        ).text.split(":")[0],
+        short_description=course.select_one(
+            "p.typography_landingTextMain__Rc8BD"
+        ).text,
         duration=course.select_one(
-            ".ComparisonTable_tableBody__W5hzV.mb-24 > div:nth-of-type(7) > div:nth-of-type(2)"
+            ".ComparisonTable_tableBody__W5hzV.mb-24 > "
+            "div:nth-of-type(7) > div:nth-of-type(2)"
         ).text,
         module_count=len(modules),
         topics=topics,
@@ -81,7 +91,8 @@ async def get_courses_urls(session: ClientSession) -> list[str]:
         set(
             course["href"].split("/courses/")[-1]
             for course in soup.select(
-                ".HeaderCoursesDropdown_dropdownWrapper__3Agil a[href*='/courses/']"
+                ".HeaderCoursesDropdown_dropdownWrapper__3Agil "
+                "a[href*='/courses/']"
             )
         )
     )
@@ -95,7 +106,10 @@ async def get_all_courses() -> tuple[Any]:
         return await asyncio.gather(*tasks)
 
 
-async def fetch_course(session: ClientSession, course_slug: str) -> Course | None:
+async def fetch_course(
+        session: ClientSession,
+        course_slug: str
+) -> Course | None:
     logging.debug(f"Fetching course: {course_slug}")
     course_page_content = await get_page_content(
         session, f"{BASE_URL}/courses/{course_slug}"
@@ -115,9 +129,11 @@ if __name__ == "__main__":
         if course and course.name not in seen_courses:
             seen_courses.add(course.name)
             print(
-                f"Name: {course.name}\nDescription: {course.short_description}\nDuration: {course.duration}\n"
-                f"Module Count: {course.module_count}\nModules:"
+                f"Name: {course.name}\n"
+                f"Description: {course.short_description}\n"
+                f"Duration: {course.duration}\n"
+                f"Module Count: {course.module_count}\nModules: "
             )
             for topic, count in course.topics:
-                print(f"  - {topic}: {count}")
+                print(f" - {topic}: {count}")
             print()
