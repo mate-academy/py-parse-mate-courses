@@ -2,7 +2,7 @@ import logging
 import time
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any
+from typing import Any, List
 
 from aiohttp import ClientSession, ClientTimeout
 from bs4 import BeautifulSoup
@@ -57,28 +57,45 @@ async def get_page_content(session: ClientSession, url: str) -> str:
 
 def parse_single_course(course: BeautifulSoup) -> Course:
     modules = course.select("div.CourseModulesList_moduleListItem__HKJqw")
+
     topics = [
         (
-            module.select_one("p.CourseModulesList_topicName__ZrDxT").text,
+            module.select_one(
+                "p.CourseModulesList_topicName__ZrDxT"
+            ).text if module.select_one(
+                "p.CourseModulesList_topicName__ZrDxT") else "N/A",
             module.select_one(
                 "p.CourseModulesList_topicsCount__yAPxH."
                 "typography_landingTextMain__Rc8BD"
-            ).text,
+            ).text if module.select_one(
+                "p.CourseModulesList_topicsCount__yAPxH."
+                "typography_landingTextMain__Rc8BD") else "0",
         )
         for module in modules
     ]
 
+    name = course.select_one(
+        "h1[data-qa='profession-title']"
+    ).text.split(":")[0] if course.select_one(
+        "h1[data-qa='profession-title']"
+    ) else "Unknown"
+    short_description = course.select_one(
+        "p.typography_landingTextMain__Rc8BD"
+    ).text if course.select_one(
+        "p.typography_landingTextMain__Rc8BD"
+    ) else "No description available"
+    duration = course.select_one(
+        ".ComparisonTable_tableBody__W5hzV.mb-24 > "
+        "div:nth-of-type(7) > div:nth-of-type(2)"
+    ).text if course.select_one(
+        ".ComparisonTable_tableBody__W5hzV.mb-24 > "
+        "div:nth-of-type(7) > div:nth-of-type(2)"
+    ) else "Duration not specified"
+
     return Course(
-        name=course.select_one(
-            "h1[data-qa='profession-title']"
-        ).text.split(":")[0],
-        short_description=course.select_one(
-            "p.typography_landingTextMain__Rc8BD"
-        ).text,
-        duration=course.select_one(
-            ".ComparisonTable_tableBody__W5hzV.mb-24 > "
-            "div:nth-of-type(7) > div:nth-of-type(2)"
-        ).text,
+        name=name,
+        short_description=short_description,
+        duration=duration,
         module_count=len(modules),
         topics=topics,
     )
@@ -99,11 +116,15 @@ async def get_courses_urls(session: ClientSession) -> list[str]:
 
 
 @log_time
-async def get_all_courses() -> tuple[Any]:
+async def get_all_courses() -> list[Any]:
     async with ClientSession() as session:
         course_urls = await get_courses_urls(session)
         tasks = [fetch_course(session, course) for course in course_urls]
-        return await asyncio.gather(*tasks)
+        courses = await asyncio.gather(*tasks)
+
+        valid_courses = [course for course in courses if course is not None]
+
+        return valid_courses
 
 
 async def fetch_course(
