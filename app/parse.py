@@ -2,7 +2,7 @@ import logging
 import time
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any
+from typing import Any, Callable, Awaitable
 
 from aiohttp import ClientSession, ClientTimeout
 from bs4 import BeautifulSoup
@@ -28,7 +28,7 @@ def configure_logging() -> None:
     )
 
 
-def log_time(func: callable) -> Any:
+def log_time(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
     @wraps(func)
     async def wrapper(*args, **kwargs) -> Any:
         start_time = time.time()
