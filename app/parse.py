@@ -28,7 +28,9 @@ def configure_logging() -> None:
     )
 
 
-def log_time(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
+def log_time(
+        func: Callable[..., Awaitable[Any]]
+) -> Callable[..., Awaitable[Any]]:
     @wraps(func)
     async def wrapper(*args, **kwargs) -> Any:
         start_time = time.time()
