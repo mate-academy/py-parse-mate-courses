@@ -9,6 +9,7 @@ class Course:
     short_description: str
     duration: str
 
+
 BASE_URL = "https://mate.academy/"
 
 
