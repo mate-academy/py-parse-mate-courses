@@ -19,14 +19,17 @@ COURSE_FIELDS = [field.name for field in fields(Course)]
 
 
 def parse_single_course(page_soup: BeautifulSoup) -> Course:
-    return Course(name=page_soup.select_one("h3").text,
-                  short_description=page_soup.select_one(
-                      ".typography_landingTextMain__Rc8BD.mb-32"
-                  ).text,
-                  duration=page_soup.select_one(
-                      "p.typography_landingTextMain__Rc8BD.ProfessionCardTags_regularTag__yTc6K:last-of-type > span:last-of-type"
-                  ).text
-                  )
+    return Course(
+        name=page_soup.select_one("h3").text,
+        short_description=page_soup.select_one(
+            ".typography_landingTextMain__Rc8BD.mb-32"
+        ).text,
+        duration=page_soup.select_one(
+            "p.typography_landingTextMain__Rc8BD."
+            "ProfessionCardTags_regularTag__yTc6K:last-of-type > "
+            "span:last-of-type"
+        ).text
+    )
 
 
 def get_all_courses() -> [Course]:
@@ -38,15 +41,14 @@ def get_all_courses() -> [Course]:
 
 
 def write_products_to_csv(courses: [Course]) -> None:
-    with open(OUTPUT_CSV_PATH, "w") as file:
+    with open(OUTPUT_CSV_PATH, "w", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow(COURSE_FIELDS)
         writer.writerows([astuple(course) for course in courses])
 
 
-def main():
+def main() -> None:
     courses = get_all_courses()
-    print(courses)
     write_products_to_csv(courses)
 
 
