@@ -7,7 +7,7 @@ FOR_SURE_THIS_COURSES = [
     "Recruiter",
     "DevOps",
     "Digital",
-    "Data"
+    "Data",
 ]  # frontend is web development sometimes
 
 
