@@ -32,7 +32,9 @@ def parse_course(course_element: BeautifulSoup) -> Course:
         "p", class_="typography_landingTextMain__Rc8BD mb-32"
     ).text
     duration = course_element.find_all(
-        "p", class_="typography_landingTextMain__Rc8BD ProfessionCardTags_regularTag__yTc6K"
+        "p",
+        class_="typography_landingTextMain__"
+               "Rc8BD ProfessionCardTags_regularTag__yTc6K"
     )[-1].text
 
     return Course(
