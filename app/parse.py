@@ -32,14 +32,17 @@ def parse_single_course(soup: Tag) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    text = requests.get(BASE_URL).content
+    try:
+        text = requests.get(BASE_URL).content
+    except requests.exceptions.RequestException as e:
+        print(e)
     soup = BeautifulSoup(text, "html.parser")
     courses = soup.select(".ProfessionCard_cardWrapper__2Q8_V")
     return [parse_single_course(course) for course in courses]
 
 
 def write_to_csv(courses: list[Course]) -> None:
-    with open("courses.csv", "w") as f:
+    with open("courses.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(FIELDS_LIST)
         writer.writerows(astuple(course) for course in courses)
