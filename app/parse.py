@@ -29,9 +29,12 @@ def parse_single_course(soup: Tag) -> Course:
 
 def get_all_courses() -> list[Course]:
     try:
-        text = requests.get(BASE_URL).content
+        response = requests.get(BASE_URL)
+        response.raise_for_status()
+        text = response.content
     except requests.exceptions.RequestException as e:
-        print(e)
+        print(f"Error fetching the page: {e}")
+        return []
     soup = BeautifulSoup(text, "html.parser")
     courses = soup.select(".ProfessionCard_cardWrapper__2Q8_V")
     return [parse_single_course(course) for course in courses]
