@@ -16,7 +16,9 @@ class Course:
 def get_course(course: Tag) -> Course:
     return Course(
         name=course.select_one("a h3").text,
-        short_description=course.select_one("p.typography_landingTextMain__Rc8BD.mb-32").text,
+        short_description=course.select_one(
+            "p.typography_landingTextMain__Rc8BD.mb-32"
+        ).text,
         duration=course.select("p")[-2].text
     )
 
