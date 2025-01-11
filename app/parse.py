@@ -8,6 +8,7 @@ import aiohttp
 import selenium.common.exceptions
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
@@ -155,7 +156,13 @@ async def get_all_courses() -> list[Course]:
     try:
         for _ in range(MAX_CONCURRENT_REQUESTS):
             try:
-                driver = webdriver.Chrome()
+                chrome_options = Options()
+                chrome_options.add_argument("--headless")
+                chrome_options.add_argument("--no-sandbox")
+                chrome_options.add_argument("--disable-dev-shm-usage")
+                chrome_options.add_argument("--disable-gpu")
+
+                driver = webdriver.Chrome(options=chrome_options)
                 driver_pool.append(driver)
 
             except selenium.common.exceptions.WebDriverException as error:
