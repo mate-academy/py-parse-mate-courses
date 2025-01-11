@@ -5,6 +5,7 @@ import time
 from dataclasses import dataclass
 
 import aiohttp
+import selenium.common.exceptions
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -53,6 +54,10 @@ async def get_course_details(
     logging.info(f"Processing course page: {course_url}")
 
     async with semaphore:
+        while not driver_pool:
+            await asyncio.sleep(1)
+            logging.warning("Waiting for available driver...")
+
         # Get available driver from pool
         driver = driver_pool.pop()
 
@@ -96,6 +101,13 @@ async def get_course_details(
 
             return topics_count, modules_count
 
+        except (
+            selenium.common.exceptions.TimeoutException,
+            selenium.common.exceptions.WebDriverException,
+        ) as error:
+            logging.error(f"Error processing {course_url}: {str(error)}")
+            raise
+
         finally:
             # Return driver to pool
             driver_pool.append(driver)
@@ -138,22 +150,40 @@ async def get_all_courses() -> list[Course]:
     )
     logging.info(f"Found {len(course_cards)} courses to process")
 
-    driver_pool = [webdriver.Chrome() for _ in range(MAX_CONCURRENT_REQUESTS)]
-    semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+    driver_pool = []
 
     try:
+        for _ in range(MAX_CONCURRENT_REQUESTS):
+            try:
+                driver = webdriver.Chrome()
+                driver_pool.append(driver)
+
+            except selenium.common.exceptions.WebDriverException as error:
+                logging.error(f"Error creating Chrome driver: {str(error)}")
+
+                if not driver_pool:
+                    raise
+                break
+
+        if not driver_pool:
+            raise RuntimeError("Failed to create any Chrome driver")
+
+        logging.info(f"Created {len(driver_pool)} Chrome drivers")
+        semaphore = asyncio.Semaphore(len(driver_pool))
+
         courses = await asyncio.gather(
-            *(
-                parse_course(card, semaphore, driver_pool)
-                for card in course_cards
-            )
+            *(parse_course(card, semaphore, driver_pool) for card in course_cards)
         )
         logging.info("Finished parsing all courses")
         return courses
 
     finally:
         for driver in driver_pool:
-            driver.quit()
+            try:
+                driver.quit()
+
+            except selenium.common.exceptions.WebDriverException as error:
+                logging.error(f"Error closing Chrome driver: {str(error)}")
 
 
 if __name__ == "__main__":
