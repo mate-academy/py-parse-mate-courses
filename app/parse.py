@@ -172,7 +172,10 @@ async def get_all_courses() -> list[Course]:
         semaphore = asyncio.Semaphore(len(driver_pool))
 
         courses = await asyncio.gather(
-            *(parse_course(card, semaphore, driver_pool) for card in course_cards)
+            *(
+                parse_course(card, semaphore, driver_pool)
+                for card in course_cards
+            )
         )
         logging.info("Finished parsing all courses")
         return courses
