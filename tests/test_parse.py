@@ -1,3 +1,5 @@
+import pytest
+
 from app.parse import get_all_courses
 
 FOR_SURE_THIS_COURSES = [
@@ -11,8 +13,9 @@ FOR_SURE_THIS_COURSES = [
 ]  # frontend is web development sometimes
 
 
-def test_get_all_courses():
-    all_courses = get_all_courses()
+@pytest.mark.asyncio
+async def test_get_all_courses():
+    all_courses = await get_all_courses()
 
     course_names = [course.name for course in all_courses]
 

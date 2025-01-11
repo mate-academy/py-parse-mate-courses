@@ -1,9 +1,10 @@
+import asyncio
 import logging
 import sys
 import time
 from dataclasses import dataclass
 
-import requests
+import aiohttp
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,6 +13,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 BASE_URL = "https://mate.academy/"
+MAX_CONCURRENT_REQUESTS = 2
 
 
 logging.basicConfig(
@@ -33,64 +35,77 @@ class Course:
     modules_count: int
 
 
-def get_page_content() -> BeautifulSoup:
+async def get_page_content() -> BeautifulSoup:
     """Get and parse HTML content from mate.academy website."""
     logging.info("Fetching main page content...")
-    response = requests.get(BASE_URL)
-    return BeautifulSoup(response.content, "html.parser")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(BASE_URL) as response:
+            html = await response.text()
+            return BeautifulSoup(html, "html.parser")
 
 
-def get_course_details(course_url: str) -> tuple[int, int]:
+async def get_course_details(
+    course_url: str,
+    semaphore: asyncio.Semaphore,
+    driver_pool: list[webdriver.Chrome],
+) -> tuple[int, int]:
     """Get detailed information about course from its page."""
     logging.info(f"Processing course page: {course_url}")
-    driver = webdriver.Chrome()
 
-    try:
-        driver.get(course_url)
+    async with semaphore:
+        # Get available driver from pool
+        driver = driver_pool.pop()
 
-        # Get topics count from fact block
-        topics_elements = driver.find_elements(
-            By.CSS_SELECTOR, "p[class*='FactBlock_factNumber__']"
-        )
-        topics_count = int(
-            next(
-                element.text.strip()
-                for element in topics_elements
-                if element.text.strip()
-                and element.text.strip()[0].isdigit()
-                and "%" not in element.text
+        try:
+            driver.get(course_url)
+
+            # Get topics count from fact block
+            topics_elements = driver.find_elements(
+                By.CSS_SELECTOR, "p[class*='FactBlock_factNumber__']"
             )
-        )
-        logging.info(f"Found {topics_count} topics")
-
-        # Find "Show more" button
-        show_more_button = WebDriverWait(driver, 10).until(
-            expected_conditions.presence_of_element_located(
-                (
-                    By.CSS_SELECTOR,
-                    "button[class*='CourseModulesList_showMore__']",
+            topics_count = int(
+                next(
+                    element.text.strip()
+                    for element in topics_elements
+                    if element.text.strip()
+                    and element.text.strip()[0].isdigit()
+                    and "%" not in element.text
                 )
             )
-        )
 
-        # Click using JavaScript
-        driver.execute_script("arguments[0].click();", show_more_button)
-        time.sleep(1)
+            # Find "Show more" button
+            show_more_button = WebDriverWait(driver, 10).until(
+                expected_conditions.presence_of_element_located(
+                    (
+                        By.CSS_SELECTOR,
+                        "button[class*='CourseModulesList_showMore__']",
+                    )
+                )
+            )
 
-        # Count modules
-        modules = driver.find_elements(
-            By.CSS_SELECTOR, "div[class*='CourseModulesList_moduleListItem__']"
-        )
-        modules_count = len(modules)
-        logging.info(f"Found {modules_count} modules")
+            # Click using JavaScript
+            driver.execute_script("arguments[0].click();", show_more_button)
+            await asyncio.sleep(1)
 
-        return topics_count, modules_count
+            # Count modules
+            modules = driver.find_elements(
+                By.CSS_SELECTOR,
+                "div[class*='CourseModulesList_moduleListItem__']",
+            )
+            modules_count = len(modules)
 
-    finally:
-        driver.quit()
+            return topics_count, modules_count
+
+        finally:
+            # Return driver to pool
+            driver_pool.append(driver)
 
 
-def parse_course(card: Tag) -> Course:
+async def parse_course(
+    card: Tag,
+    semaphore: asyncio.Semaphore,
+    driver_pool: list[webdriver.Chrome],
+) -> Course:
     """Extract course information from a course card."""
     name = card.select_one("h3").text.strip()
     logging.info(f"Processing course: {name}")
@@ -105,28 +120,46 @@ def parse_course(card: Tag) -> Course:
 
     # Get course URL and fetch additional details
     course_url = BASE_URL.rstrip("/") + card.select_one("a")["href"]
-    topics_count, modules_count = get_course_details(course_url)
+    topics_count, modules_count = await get_course_details(
+        course_url, semaphore, driver_pool
+    )
 
     return Course(
         name, short_description, duration, topics_count, modules_count
     )
 
 
-def get_all_courses() -> list[Course]:
+async def get_all_courses() -> list[Course]:
     """Get list of all courses from mate.academy website."""
     logging.info("Starting courses parsing...")
-    page_content = get_page_content()
+    page_content = await get_page_content()
     course_cards = page_content.select(
         "div[class*='ProfessionCard_cardWrapper__']"
     )
     logging.info(f"Found {len(course_cards)} courses to process")
 
-    courses = [parse_course(card) for card in course_cards]
-    logging.info("Finished parsing all courses")
+    driver_pool = [webdriver.Chrome() for _ in range(MAX_CONCURRENT_REQUESTS)]
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
-    return courses
+    try:
+        courses = await asyncio.gather(
+            *(
+                parse_course(card, semaphore, driver_pool)
+                for card in course_cards
+            )
+        )
+        logging.info("Finished parsing all courses")
+        return courses
+
+    finally:
+        for driver in driver_pool:
+            driver.quit()
 
 
 if __name__ == "__main__":
-    courses = get_all_courses()
+    start_time = time.time()
+    courses = asyncio.run(get_all_courses())
+    end_time = time.time()
+
     print(f"\nTotal courses parsed: {len(courses)}")
+    print(f"Time taken: {end_time - start_time} seconds")
