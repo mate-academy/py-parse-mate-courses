@@ -79,21 +79,18 @@ async def get_course_details(
                 )
             )
 
-            # Find "Show more" button
             show_more_button = WebDriverWait(driver, 10).until(
                 expected_conditions.presence_of_element_located(
                     (
-                        By.CSS_SELECTOR,
-                        "button[class*='CourseModulesList_showMore__']",
+                        By.TAG_NAME,
+                        "button",
                     )
                 )
             )
 
-            # Click using JavaScript
-            driver.execute_script("arguments[0].click();", show_more_button)
+            show_more_button.click()
             await asyncio.sleep(1)
 
-            # Count modules
             modules = driver.find_elements(
                 By.CSS_SELECTOR,
                 "div[class*='CourseModulesList_moduleListItem__']",
@@ -199,6 +196,7 @@ async def get_all_courses() -> list[Course]:
 if __name__ == "__main__":
     start_time = time.time()
     courses = asyncio.run(get_all_courses())
+    print(courses)
     end_time = time.time()
 
     print(f"\nTotal courses parsed: {len(courses)}")
