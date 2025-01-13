@@ -13,19 +13,25 @@ class Course:
 
 
 def parse_single_course(course_element: Tag) -> Course:
-    name = course_element.select_one("h3").text.strip()
-    short_description = course_element.select_one(
-        ".typography_landingTextMain__Rc8BD"
-    ).text.strip()
-    duration = course_element.select(
-        ".typography_landingTextMain__Rc8BD span"
-    )[-1].text.strip()
+    try:
+        name = course_element.select_one("h3").text.strip()
+    except AttributeError:
+        name = "Unknown"
+
+    try:
+        short_description = course_element.select_one(".typography_landingTextMain__Rc8BD").text.strip()
+    except AttributeError:
+        short_description = "No description available"
+
+    try:
+        duration = course_element.select(".typography_landingTextMain__Rc8BD span")[-1].text.strip()
+    except (AttributeError, IndexError):
+        duration = "Unknown duration"
 
     modules_count = len(course_element.select(".module-selector"))
     topics_count = len(course_element.select(".topic-selector"))
 
-    return Course(name, short_description, duration,
-                  modules_count, topics_count)
+    return Course(name, short_description, duration, modules_count, topics_count)
 
 
 def get_all_courses() -> list[Course]:
