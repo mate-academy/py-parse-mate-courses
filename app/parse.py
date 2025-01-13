@@ -16,20 +16,24 @@ def parse_single_course(course_element: Tag) -> Course:
     try:
         name = course_element.select_one("h3").text.strip()
     except AttributeError:
-        name = "Unknown"
+        name = "N/A"
 
     try:
-        short_description = course_element.select_one(".typography_landingTextMain__Rc8BD").text.strip()
+        short_description = course_element.select_one(
+            ".typography_landingTextMain__Rc8BD"
+        ).text.strip()
     except AttributeError:
         short_description = "No description available"
 
     try:
-        duration = course_element.select(".typography_landingTextMain__Rc8BD span")[-1].text.strip()
+        duration = course_element.select(
+            ".typography_landingTextMain__Rc8BD span"
+        )[-1].text.strip()
     except (AttributeError, IndexError):
-        duration = "Unknown duration"
+        duration = "Duration not available"
 
-    modules_count = len(course_element.select(".module-selector"))
-    topics_count = len(course_element.select(".topic-selector"))
+    modules_count = len(course_element.select(".module-selector")) if course_element.select(".module-selector") else 0
+    topics_count = len(course_element.select(".topic-selector")) if course_element.select(".topic-selector") else 0
 
     return Course(name, short_description, duration, modules_count, topics_count)
 
