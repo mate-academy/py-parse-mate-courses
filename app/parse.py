@@ -32,10 +32,14 @@ def parse_single_course(course_element: Tag) -> Course:
     except (AttributeError, IndexError):
         duration = "Duration not available"
 
-    modules_count = len(course_element.select(".module-selector")) if course_element.select(".module-selector") else 0
-    topics_count = len(course_element.select(".topic-selector")) if course_element.select(".topic-selector") else 0
+    modules_count = len(course_element.select(".module-selector")) \
+        if course_element.select(".module-selector") \
+        else 0
+    topics_count = len(course_element.select(".topic-selector")) \
+        if course_element.select(".topic-selector") else 0
 
-    return Course(name, short_description, duration, modules_count, topics_count)
+    return Course(name, short_description, duration,
+                  modules_count, topics_count)
 
 
 def get_all_courses() -> list[Course]:
