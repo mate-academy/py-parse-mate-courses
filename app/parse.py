@@ -2,6 +2,7 @@ import requests
 import csv
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass, fields, astuple
+from requests.exceptions import RequestException
 
 
 BASE_URL = "https://mate.academy/"
@@ -38,8 +39,14 @@ def parse_single_course(course: Tag) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    response = requests.get(BASE_URL)
-    soup = BeautifulSoup(response.text, "html.parser")
+    try:
+        response = requests.get(BASE_URL)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+    except RequestException as e:
+        print(f"Помилка під час запиту до {BASE_URL}: {e}")
+        return []
+
     course_elements = soup.select("div.ProfessionCard_cardWrapper__2Q8_V")
     courses = []
 
@@ -47,7 +54,14 @@ def get_all_courses() -> list[Course]:
         try:
             course = parse_single_course(element)
             courses.append(course)
-        except AttributeError:
+        except AttributeError as e:
+            print(f"Помилка в структурі HTML: {e}")
+            continue
+        except ValueError as e:
+            print(f"Недостатньо даних для парсингу курсу: {e}")
+            continue
+        except Exception as e:
+            print(f"Непередбачувана помилка: {e}")
             continue
 
     return courses
