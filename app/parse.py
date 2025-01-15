@@ -17,9 +17,11 @@ def parse_single_course(course: Tag) -> Course:
     return Course(
         name=course.select_one("a.typography_landingH3__vTjok h3").text,
         short_description=course.find(
-            "p", class_="typography_landingTextMain__Rc8BD mb-32").get_text(),
+            "p", class_="typography_landingTextMain__Rc8BD mb-32").
+        get_text(),
         duration=course.select(
-            "p.typography_landingTextMain__Rc8BD.ProfessionCardTags_regularTag__dqOGj")[-1].
+            "p.typography_landingTextMain__Rc8BD."
+            "ProfessionCardTags_regularTag__dqOGj")[-1].
         find("span").text,
     )
 
