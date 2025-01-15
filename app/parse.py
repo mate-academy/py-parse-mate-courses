@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+import requests
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass
 
@@ -31,4 +31,8 @@ def get_single_page_courses(pages_soup: Tag) -> [Course]:
 
 
 def get_all_courses() -> list[Course]:
-    pass
+    text = requests.get(BASE_URL).content
+    page_soup = BeautifulSoup(text, "html.parser")
+    all_courses = get_single_page_courses(page_soup)
+
+    return all_courses
