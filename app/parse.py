@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 from bs4 import BeautifulSoup, Tag
+from dataclasses import dataclass
+
+BASE_URL = "https://mate.academy/"
 
 
 @dataclass
@@ -19,6 +22,12 @@ def parse_single_course(course: Tag) -> Course:
             "p.typography_landingTextMain__Rc8BD.ProfessionCardTags_regularTag__dqOGj")[-1].
         find("span").text,
     )
+
+
+def get_single_page_courses(pages_soup: Tag) -> [Course]:
+    courses = pages_soup.select(".ProfessionCard_cardWrapper__2Q8_V")
+
+    return [parse_single_course(course) for course in courses]
 
 
 def get_all_courses() -> list[Course]:
