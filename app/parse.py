@@ -24,6 +24,7 @@ def parse_single_course(course_element: Tag) -> Course:
     )[-1].text.strip()
     return Course(name, short_description, duration)
 
+
 def get_all_courses() -> list[Course]:
     content = requests.get(BASE_URL)
     content.raise_for_status()
