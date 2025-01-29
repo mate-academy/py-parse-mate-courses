@@ -24,8 +24,9 @@ def extract_courses(soup: BeautifulSoup) -> List[tuple]:
         {"class": "ProfessionCard_title__m7uno typography_textH4__pLmyn"})
     short_descriptions = soup.find_all(
         "p",
-        {"class": "c-text-platform-secondary typography_textMain__oRJ69 "
-                  "ProfessionCard_text___l0Du ProfessionCard_description__K8weo"})
+        {"class":
+         "c-text-platform-secondary typography_textMain__oRJ69 
+         "ProfessionCard_text___l0Du ProfessionCard_description__K8weo"})
     durations = soup.find_all(
         "p",
         {"class": "c-text-platform-secondary typography_textMain__oRJ69 "
