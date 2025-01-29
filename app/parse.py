@@ -18,7 +18,7 @@ def fetch_page(url: str) -> BeautifulSoup:
     return BeautifulSoup(response.text, "html.parser")
 
 
-def extract_courses(soup: BeautifulSoup) -> List[set]:
+def extract_courses(soup: BeautifulSoup) -> List[tuple]:
     names = soup.find_all(
         "h3",
         {"class": "ProfessionCard_title__m7uno typography_textH4__pLmyn"})
@@ -38,7 +38,7 @@ def extract_courses(soup: BeautifulSoup) -> List[set]:
     return course_data
 
 
-def parse_courses(course_list: List[set]) -> List[Course]:
+def parse_courses(course_list: List[tuple]) -> List[Course]:
     return [Course(name=name,
                    short_description=description,
                    duration=duration)
