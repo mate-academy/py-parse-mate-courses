@@ -19,11 +19,17 @@ def fetch_page(url: str) -> BeautifulSoup:
 
 
 def extract_courses(soup: BeautifulSoup) -> List[set]:
-    names = soup.find_all("h3", {"class": "ProfessionCard_title__m7uno typography_textH4__pLmyn"})
-    short_descriptions = soup.find_all("p", {"class": "c-text-platform-secondary typography_textMain__oRJ69 "
-                                                      "ProfessionCard_text___l0Du ProfessionCard_description__K8weo"})
-    durations = soup.find_all("p", {"class": "c-text-platform-secondary typography_textMain__oRJ69 "
-                                             "ProfessionCard_text___l0Du ProfessionCard_duration__13PwX"})
+    names = soup.find_all(
+        "h3",
+        {"class": "ProfessionCard_title__m7uno typography_textH4__pLmyn"})
+    short_descriptions = soup.find_all(
+        "p",
+        {"class": "c-text-platform-secondary typography_textMain__oRJ69 "
+                  "ProfessionCard_text___l0Du ProfessionCard_description__K8weo"})
+    durations = soup.find_all(
+        "p",
+        {"class": "c-text-platform-secondary typography_textMain__oRJ69 "
+                  "ProfessionCard_text___l0Du ProfessionCard_duration__13PwX"})
     course_names = [name.text.strip() for name in names]
     course_descriptions = [desc.text.strip() for desc in short_descriptions]
     course_durations = [duration.text.strip() for duration in durations]
@@ -33,7 +39,10 @@ def extract_courses(soup: BeautifulSoup) -> List[set]:
 
 
 def parse_courses(course_list: List[set]) -> List[Course]:
-    return [Course(name=name, short_description=description, duration=duration) for name, description, duration in course_list]
+    return [Course(name=name,
+                   short_description=description,
+                   duration=duration)
+            for name, description, duration in course_list]
 
 
 def get_all_courses() -> List[Course]:
