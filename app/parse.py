@@ -72,38 +72,6 @@ class WebCoursesRepository(CoursesRepository):
         return self.parser.parse(html)
 
 
-# --- Adapters  ---
-class HtmlFetcher:
-    def fetch(self, url: str) -> str:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.text
-
-
-class MateAcademyHtmlParser:
-    def parse(self, html: str) -> List[Course]:
-        soup = BeautifulSoup(html, "html.parser")
-        courses = []
-        for course_card in soup.select("a.ProfessionCard_cardWrapper__BCg0O"):
-            name = course_card.select_one(
-                "h3.ProfessionCard_title__m7uno"
-            ).text.strip()
-            description = course_card.select_one(
-                "p.ProfessionCard_description__K8weo"
-            ).text.strip()
-            duration = course_card.select_one(
-                "p.ProfessionCard_duration__13PwX"
-            ).text.strip()
-            courses.append(
-                Course(
-                    name=name,
-                    short_description=description,
-                    duration=duration,
-                )
-            )
-        return courses
-
-
 # --- Use Cases  ---
 class GetAllCourses:
     def __init__(self, repository: CoursesRepository) -> None:
