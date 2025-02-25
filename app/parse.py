@@ -34,12 +34,8 @@ class MateAcademyHtmlParser:
     def parse(self, html: str) -> List[Course]:
         soup = BeautifulSoup(html, "html.parser")
         courses = []
-        for course_card in soup.select(
-            "a.ProfessionCard_cardWrapper__BCg0O"
-        ):
-            name = course_card.select_one(
-                "h3.ProfessionCard_title__m7uno"
-            ).text.strip()
+        for course_card in soup.select("a.ProfessionCard_cardWrapper__BCg0O"):
+            name = course_card.select_one("h3.ProfessionCard_title__m7uno").text.strip()
             description = course_card.select_one(
                 "p.ProfessionCard_description__K8weo"
             ).text.strip()
@@ -85,9 +81,7 @@ class MateAcademyHtmlParser:
         soup = BeautifulSoup(html, "html.parser")
         courses = []
         for course_card in soup.select("a.ProfessionCard_cardWrapper__BCg0O"):
-            name = course_card.select_one(
-                "h3.ProfessionCard_title__m7uno"
-            ).text.strip()
+            name = course_card.select_one("h3.ProfessionCard_title__m7uno").text.strip()
             description = course_card.select_one(
                 "p.ProfessionCard_description__K8weo"
             ).text.strip()
