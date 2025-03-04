@@ -36,33 +36,34 @@ def get_courses_links(main_page_soup: BeautifulSoup) -> dict[str, str]:
     links = {}
     for course in courses:
         course_link = course.select_one("a[href*='/courses']")["href"]
-        course_name = course.select_one("a[href*='/courses']").text
+        course_name = course.select_one("a[href*='/courses']").get_text()
         links[course_link] = course_name
     return links
 
 
-def parse_singl_course(course_link: str, course_name: str) -> Course:
+def parse_single_course(course_link: str, course_name: str) -> Course:
     try:
         text = requests.get(BASE_URL + course_link, timeout=5).content
         main_page_soup = BeautifulSoup(text, "html.parser")
         name = course_name
         short_description = main_page_soup.select_one(
             ".SalarySection_aboutProfession__1VFHK"
-        ).text
+        ).get_text()
 
         duration = ""
         rows = main_page_soup.select(".ComparisonTable_row__q3PSK")
         for row in rows:
             cells = row.select(".ComparisonTable_cell__RNsyU")
-            if len(cells) == 2 and cells[0].text.strip() == "Тривалість":
-                duration = cells[1].text.strip()
+            if len(cells) == 2 and cells[0].get_text().strip() == "Тривалість":
+                duration = cells[1].get_text().strip()
                 break
 
         mod_num = len(
             main_page_soup.select(".CourseModulesList_topicName__ZrDxT")
         )
         topic_num = (
-            main_page_soup.select_one(".FactBlock_factNumber__d_8nn").text
+            main_page_soup.
+            select_one(".FactBlock_factNumber__d_8nn").get_text()
         )
 
         return Course(name, short_description, duration, mod_num, topic_num)
@@ -80,7 +81,7 @@ def get_all_courses() -> list[Course]:
         courses_list = []
         for course_link, course_name in courses_links.items():
             logging.info(f"Got course: {course_name}")
-            courses_list.append(parse_singl_course(course_link, course_name))
+            courses_list.append(parse_single_course(course_link, course_name))
 
         return courses_list
     except Exception as e:
