@@ -42,45 +42,60 @@ def get_courses_links(main_page_soup: BeautifulSoup) -> dict[str, str]:
 
 
 def parse_singl_course(course_link: str, course_name: str) -> Course:
-    text = requests.get(BASE_URL + course_link, timeout=5).content
-    main_page_soup = BeautifulSoup(text, "html.parser")
-    name = course_name
-    short_description = main_page_soup.select_one(
-        ".SalarySection_aboutProfession__1VFHK"
-    ).text
+    try:
+        text = requests.get(BASE_URL + course_link, timeout=5).content
+        main_page_soup = BeautifulSoup(text, "html.parser")
+        name = course_name
+        short_description = main_page_soup.select_one(
+            ".SalarySection_aboutProfession__1VFHK"
+        ).text
 
-    duration = ""
-    rows = main_page_soup.select(".ComparisonTable_row__q3PSK")
-    for row in rows:
-        cells = row.select(".ComparisonTable_cell__RNsyU")
-        if len(cells) == 2 and cells[0].text.strip() == "Тривалість":
-            duration = cells[1].text.strip()
-            break
+        duration = ""
+        rows = main_page_soup.select(".ComparisonTable_row__q3PSK")
+        for row in rows:
+            cells = row.select(".ComparisonTable_cell__RNsyU")
+            if len(cells) == 2 and cells[0].text.strip() == "Тривалість":
+                duration = cells[1].text.strip()
+                break
 
-    mod_num = len(main_page_soup.select(".CourseModulesList_topicName__ZrDxT"))
-    topic_num = main_page_soup.select_one(".FactBlock_factNumber__d_8nn").text
+        mod_num = len(
+            main_page_soup.select(".CourseModulesList_topicName__ZrDxT")
+        )
+        topic_num = (
+            main_page_soup.select_one(".FactBlock_factNumber__d_8nn").text
+        )
 
-    return Course(name, short_description, duration, mod_num, topic_num)
+        return Course(name, short_description, duration, mod_num, topic_num)
+    except Exception as e:
+        logging.error(f"Error parsing course {course_name}: {e}")
+        return Course(course_name, "", "", 0, 0)
 
 
 def get_all_courses() -> list[Course]:
-    logging.info("Getting courses...")
-    text = requests.get(BASE_URL, timeout=5).content
-    main_page_soup = BeautifulSoup(text, "html.parser")
-    courses_links = get_courses_links(main_page_soup)
-    courses_list = []
-    for course_link, course_name in courses_links.items():
-        logging.info(f"Got course: {course_name}")
-        courses_list.append(parse_singl_course(course_link, course_name))
+    try:
+        logging.info("Getting courses...")
+        text = requests.get(BASE_URL, timeout=5).content
+        main_page_soup = BeautifulSoup(text, "html.parser")
+        courses_links = get_courses_links(main_page_soup)
+        courses_list = []
+        for course_link, course_name in courses_links.items():
+            logging.info(f"Got course: {course_name}")
+            courses_list.append(parse_singl_course(course_link, course_name))
 
-    return courses_list
+        return courses_list
+    except Exception as e:
+        logging.error(f"Error getting courses: {e}")
+        return []
 
 
 def write_courses_to_csv(courses: list[Course], output_csv_path: str) -> None:
-    with open(output_csv_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(COURSE_FIELDS)
-        writer.writerows(astuple(course) for course in courses)
+    try:
+        with open(output_csv_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(COURSE_FIELDS)
+            writer.writerows(astuple(course) for course in courses)
+    except Exception as e:
+        logging.error(f"Error writing courses to CSV: {e}")
 
 
 if __name__ == "__main__":
