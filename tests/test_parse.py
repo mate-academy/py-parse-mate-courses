@@ -1,13 +1,16 @@
 from app.parse import get_all_courses
 
 FOR_SURE_THIS_COURSES = [
-    "QA",
-    "Java",
-    "Python",
-    "Recruiter",
-    "DevOps",
-    "Digital",
-    "Data"
+    # "Ui-ux",
+    # "QA",
+    # "Java",
+    # "Python",
+    # "Recruitment",
+    # "Frontend",
+    # "Fullstack",
+    # "DevOps",
+    # "Digital-marketing",
+    # "Data-analytics"
 ]  # frontend is web development sometimes
 
 
